@@ -1,44 +1,29 @@
-# **Finding Lane Lines on the Road** 
-
-## Writeup Template
-
-### You can use this file as a template for your writeup if you want to submit it as a markdown file. But feel free to use some other method and submit a pdf if you prefer.
-
----
-
 **Finding Lane Lines on the Road**
-
-The goals / steps of this project are the following:
-* Make a pipeline that finds lane lines on the road
-* Reflect on your work in a written report
-
-
-[//]: # (Image References)
-
-[image1]: ./examples/grayscale.jpg "Grayscale"
+==================================
 
 ---
 
-### Reflection
+### 1. Pipeline Description - 파이프 라인 설명
 
-### 1. Describe your pipeline. As part of the description, explain how you modified the draw_lines() function.
+선을 찾기 위한 pipeline은 draw_lines를 제외한 총 6단계로 나뉘어 집니다.
 
-My pipeline consisted of 5 steps. First, I converted the images to grayscale, then I .... 
+먼저 이미지를 grayscale로 변환하여 한 채널로 만듭니다.
 
-In order to draw a single line on the left and right lanes, I modified the draw_lines() function by ...
+그 다음 가우시안 블러를 사용하여 이미지의 노이즈를 줄입니다.
 
-If you'd like to include images to show how the pipeline works, here is how to include an image: 
+이후 canny edge를 사용하여 이미지의 외곽부분을 검출합니다.
 
-![alt text][image1]
+검출한 외곽부분을 관심영역 설정으로 차선부분만 남겨두도록 합니다.
 
+이후 허프변환을 통해 직선을 검출합니다.
+
+검출한 직선을 보고, 기울기를 계산하여 해당 차선이 오른쪽인지 왼쪽인지 판별합니다.
+
+이렇게 판별한 직선을 해당 이미지에 그리도록 합니다.
 
 ### 2. Identify potential shortcomings with your current pipeline
 
-
-One potential shortcoming would be what would happen when ... 
-
-Another shortcoming could be ...
-
+해당 코드에서
 
 ### 3. Suggest possible improvements to your pipeline
 
