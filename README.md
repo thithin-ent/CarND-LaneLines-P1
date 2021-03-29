@@ -1,56 +1,34 @@
-# **Finding Lane Lines on the Road** 
-[![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
+**Finding Lane Lines on the Road**
+==================================
 
-<img src="examples/laneLines_thirdPass.jpg" width="480" alt="Combined Image" />
-
-Overview
 ---
 
-When we drive, we use our eyes to decide where to go.  The lines on the road that show us where the lanes are act as our constant reference for where to steer the vehicle.  Naturally, one of the first things we would like to do in developing a self-driving car is to automatically detect lane lines using an algorithm.
+### 1. Pipeline Description - 파이프 라인 설명
 
-In this project you will detect lane lines in images using Python and OpenCV.  OpenCV means "Open-Source Computer Vision", which is a package that has many useful tools for analyzing images.  
+선을 찾기 위한 pipeline은 draw_lines를 제외한 총 6단계로 나뉘어 집니다. Pipelines for finding lines are divided into six steps, excluding draw_lines.
 
-To complete the project, two files will be submitted: a file containing project code and a file containing a brief write up explaining your solution. We have included template files to be used both for the [code](https://github.com/udacity/CarND-LaneLines-P1/blob/master/P1.ipynb) and the [writeup](https://github.com/udacity/CarND-LaneLines-P1/blob/master/writeup_template.md).The code file is called P1.ipynb and the writeup template is writeup_template.md 
+먼저 이미지를 grayscale로 변환하여 한 채널로 만듭니다. First, convert the image to grayscale and make it one channel.
 
-To meet specifications in the project, take a look at the requirements in the [project rubric](https://review.udacity.com/#!/rubrics/322/view)
+그 다음 가우시안 블러를 사용하여 이미지의 노이즈를 줄입니다. Next, reduce the noise in the image using Gaussian Blur.
 
+이후 canny edge를 사용하여 이미지의 외곽 부분을 검출합니다. Subsequently, the edge part of the image is detected using the canny edge of the image.
 
-Creating a Great Writeup
----
-For this project, a great writeup should provide a detailed response to the "Reflection" section of the [project rubric](https://review.udacity.com/#!/rubrics/322/view). There are three parts to the reflection:
+검출한 외곽 부분을 관심 영역 설정으로 차선 부분만 남겨두도록 합니다. Leave the detected edge part only the lane part with the region of interest setting.
 
-1. Describe the pipeline
+이후 허프 변환을 통해 직선을 검출합니다. Detects straight lines through a huff transformation.
 
-2. Identify any shortcomings
+검출한 직선을 보고, 기울기를 계산하여 해당 차선이 오른쪽인지 왼쪽인지 판별합니다. View the detected straight line and calculate the slope to determine whether the lane is right or left.
 
-3. Suggest possible improvements
+이렇게 판별한 직선을 해당 이미지에 그리도록 합니다. Draw the straight line you have determined on that image.
 
-We encourage using images in your writeup to demonstrate how your pipeline works.  
+### 2. Identify potential shortcomings in pipeline - 파이프 라인에서의 잠재적 단점
 
-All that said, please be concise!  We're not looking for you to write a book here: just a brief description.
+해당 코드에서 왼쪽과 오른쪽 차선 판별 부분에서 현재 파이프 라인 상에서는 기울기를 통하여 구분하도록 하였습니다. 만약 기울기가 음의 값인 경우 오른쪽 차선, 양의 값인 경우 왼쪽 차선이 됩니다. 허나 차선이 기울어져 있는 경우, 오른쪽 차선의 기울기가 양의 값을 가지거나 왼쪽 차선이 음의 값을 가질 수 있습니다. 이때에 차선의 오른쪽 혹은 왼쪽 판별에 어려움이 있습니다.
 
-You're not required to use markdown for your writeup.  If you use another method please just submit a pdf of your writeup. Here is a link to a [writeup template file](https://github.com/udacity/CarND-LaneLines-P1/blob/master/writeup_template.md). 
+Use the slope to determine the right and left lanes in the code. If the slope is negative, it will be the right lane. And if the slope is positive, it becomes the left lane. However, if the lane is tilted to one side, the slope of the right lane is positive or the slope of the left lane is negative. In this case, it is difficult to determine the right and left lanes.
 
+### 3. Suggest possible improvements to pipeline - 파이프 라인에서의 개선점
 
-The Project
----
+기울기를 통해 오른쪽, 왼쪽 차선을 구별하는 것이 아니라 ROI를 오른쪽, 왼쪽으로 구별하여 차선을 찾도록 합니다. 이러한 경우, 차선이 한쪽으로 기울어져 있어도 오른쪽, 왼쪽 차선의 판별이 정확히 할 수 있습니다.
 
-## If you have already installed the [CarND Term1 Starter Kit](https://github.com/udacity/CarND-Term1-Starter-Kit/blob/master/README.md) you should be good to go!   If not, you should install the starter kit to get started on this project. ##
-
-**Step 1:** Set up the [CarND Term1 Starter Kit](https://github.com/udacity/CarND-Term1-Starter-Kit/blob/master/README.md) if you haven't already.
-
-**Step 2:** Open the code in a Jupyter Notebook
-
-You will complete the project code in a Jupyter notebook.  If you are unfamiliar with Jupyter Notebooks, check out [Udacity's free course on Anaconda and Jupyter Notebooks](https://classroom.udacity.com/courses/ud1111) to get started.
-
-Jupyter is an Ipython notebook where you can run blocks of code and see results interactively.  All the code for this project is contained in a Jupyter notebook. To start Jupyter in your browser, use terminal to navigate to your project directory and then run the following command at the terminal prompt (be sure you've activated your Python 3 carnd-term1 environment as described in the [CarND Term1 Starter Kit](https://github.com/udacity/CarND-Term1-Starter-Kit/blob/master/README.md) installation instructions!):
-
-`> jupyter notebook`
-
-A browser window will appear showing the contents of the current directory.  Click on the file called "P1.ipynb".  Another browser window will appear displaying the notebook.  Follow the instructions in the notebook to complete the project.  
-
-**Step 3:** Complete the project and submit both the Ipython notebook and the project writeup
-
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
-
+Rather than distinguishing right and left lanes through slope, distinguish ROI right and left to find lanes. In this case, even if the lane is tilted to one side, the right and left lanes can be accurately determined.
